@@ -1,9 +1,11 @@
 package com.example.crud;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,26 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.vegetable_name_txt.setText(String.valueOf(vegetable_name.get(position)));
         holder.vegetable_category_txt.setText(String.valueOf(vegetable_category.get(position)));
         holder.vegetable_origincountry_txt.setText(String.valueOf(vegetable_origincountry.get(position)));
+        holder.edit_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateActivity.initialValues(holder.vegetable_id_txt.getText().toString(),
+                        holder.vegetable_name_txt.getText().toString(),
+                        holder.vegetable_category_txt.getText().toString(),
+                        holder.vegetable_origincountry_txt.getText().toString());
+                Intent intent = new Intent(context, UpdateActivity.class);
+                context.startActivity(intent);
+            }
+        });
+        holder.delete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
+                databaseHelper.deleteVegetable(holder.vegetable_id_txt.getText().toString());
+                Intent intent = new Intent(context, MainActivity.class);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -48,12 +70,15 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView vegetable_id_txt,vegetable_name_txt,vegetable_category_txt,vegetable_origincountry_txt;
+        Button edit_btn,delete_btn;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             vegetable_id_txt = itemView.findViewById(R.id.vegetable_id_txt);
             vegetable_name_txt = itemView.findViewById(R.id.vegetable_name_txt);
             vegetable_category_txt = itemView.findViewById(R.id.vegetable_category_txt);
             vegetable_origincountry_txt = itemView.findViewById(R.id.vegetable_origincountry_txt);
+            edit_btn = itemView.findViewById(R.id.editBtn);
+            delete_btn = itemView.findViewById(R.id.deleteBtn);
         }
     }
 }

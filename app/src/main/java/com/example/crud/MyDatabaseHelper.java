@@ -65,4 +65,26 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
         return cursor;
     }
+    void updateVegetable(String id, String name, String category, String origincountry) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_NAME, name);
+        cv.put(COLUMN_CATEGORY, category);
+        cv.put(COLUMN_ORIGINCOUNTRY, origincountry);
+        long result = db.update(TABLE_NAME, cv, COLUMN_ID + "=?", new String[]{id});
+        if (result == -1){
+            Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
+        }
+    }
+    void deleteVegetable(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.delete(TABLE_NAME, COLUMN_ID + "=?", new String[]{id});
+        if (result == -1) {
+            Toast.makeText(context, "Failed to Delete!", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, "Successfully Deleted!", Toast.LENGTH_LONG).show();
+        }
+    }
 }

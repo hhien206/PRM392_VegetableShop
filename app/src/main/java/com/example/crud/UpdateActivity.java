@@ -12,27 +12,31 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class AddActivity extends AppCompatActivity {
+public class UpdateActivity extends AppCompatActivity {
+    public static String id_initial ,name_initial, category_initial, origincountry_initial;
     EditText name_input, category_input, origincountry_input;
-    Button add_button;
+    Button update_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_update);
         name_input = findViewById(R.id.name_input);
+        name_input.setText(name_initial);
         category_input = findViewById(R.id.category_input);
+        category_input.setText(category_initial);
         origincountry_input = findViewById(R.id.origincountry_input);
-        add_button = findViewById(R.id.add_button);
-        add_button.setOnClickListener(new View.OnClickListener() {
+        origincountry_input.setText(origincountry_initial);
+        update_button = findViewById(R.id.update_button);
+        update_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MyDatabaseHelper myDB = new MyDatabaseHelper(AddActivity.this);
-                myDB.addVegetable(name_input.getText().toString().trim(),
+                MyDatabaseHelper myDB = new MyDatabaseHelper(UpdateActivity.this);
+                myDB.updateVegetable(id_initial,name_input.getText().toString().trim(),
                         category_input.getText().toString().trim(),
                         origincountry_input.getText().toString().trim()
-                        );
-                Intent intent = new Intent(AddActivity.this, MainActivity.class);
+                );
+                Intent intent = new Intent(UpdateActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -42,5 +46,11 @@ public class AddActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+    public static void initialValues(String id, String name, String category, String origincountry){
+        id_initial = id;
+        name_initial = name;
+        category_initial = category;
+        origincountry_initial = origincountry;
     }
 }
