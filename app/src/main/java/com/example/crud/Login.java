@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class Login extends AppCompatActivity {
 
+    public static String account_role;
     EditText editTextUsername, editTextPassword;
     Button buttonLogin;
     MyDatabaseHelper myDB;
@@ -46,17 +47,27 @@ public class Login extends AppCompatActivity {
                 if(username.equals("admin@gmail.com") && password.equals("12345")){
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
+                    account_role = "Admin";
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 }
                 else if (myDB.checkUser(username, password)) {
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
+                    account_role = "User";
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 } else {
                     Toast.makeText(Login.this, "Đăng nhập thất bại! Kiểm tra lại thông tin.", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        Button registerButton = findViewById(R.id.register_button);
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this, Register.class);
+                startActivity(intent);
             }
         });
     }

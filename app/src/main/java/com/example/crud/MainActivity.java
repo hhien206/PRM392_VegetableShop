@@ -33,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycleView);
         add_button = findViewById(R.id.add_button);
+        if(Login.account_role.equals("Admin")){
+            add_button.setVisibility(View.VISIBLE);
+        }
+        else{
+            add_button.setVisibility(View.GONE);
+        }
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

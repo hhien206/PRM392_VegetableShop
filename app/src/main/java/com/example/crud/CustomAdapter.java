@@ -79,6 +79,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             vegetable_origincountry_txt = itemView.findViewById(R.id.vegetable_origincountry_txt);
             edit_btn = itemView.findViewById(R.id.editBtn);
             delete_btn = itemView.findViewById(R.id.deleteBtn);
+            if(Login.account_role.equals("Admin")){
+                edit_btn.setVisibility(View.VISIBLE);
+                delete_btn.setVisibility(View.VISIBLE);
+            }
+            else{
+                edit_btn.setVisibility(View.GONE);
+                delete_btn.setVisibility(View.GONE);
+            }
         }
     }
 }
