@@ -3,6 +3,9 @@ package com.example.crud;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -63,6 +66,35 @@ public class MainActivity extends AppCompatActivity {
         customAdapter = new CustomAdapter(MainActivity.this, vegetable_id,vegetable_name,vegetable_category,vegetable_origincountry);
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.vegetable_main_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Xử lý sự kiện khi người dùng chọn các mục trong menu
+        int id = item.getItemId();
+
+        if (id == R.id.logout) {
+            // Gọi hàm xử lý logout
+            logout();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+    private void logout() {
+        // Xử lý việc logout, ví dụ: xóa thông tin đăng nhập đã lưu (nếu có)
+
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        startActivity(intent);
+        finish();
+
+        Toast.makeText(this, "Bạn đã đăng xuất!", Toast.LENGTH_SHORT).show();
     }
     void storedataInArray(){
         Cursor cursor = myDB.readAllData();

@@ -14,10 +14,12 @@
         tools:targetApi="31">
         <activity
             android:name=".Register"
-            android:exported="false" />
-        <!-- LoginActivity sẽ là màn hình khởi động đầu tiên -->
+            android:exported="false"
+            android:label="Register"
+            android:parentActivityName=".Login" /> <!-- LoginActivity sẽ là màn hình khởi động đầu tiên -->
         <activity
             android:name=".Login"
+            android:label="Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,7 +40,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="Vegetable_Shop" />
+            android:label="Vegetable Shop" />
     </application>
 
 </manifest>
