@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     private Context context;
     private static final String DATABASE_NAME = "VegetableShop.db";
@@ -144,19 +147,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     //MANAGE USERS
 
-    boolean checkUser(String username, String password) {
+    Cursor checkUser(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + USER_TABLE_NAME + " WHERE " +
                         COLUMN_USERNAME + " = ? AND " + COLUMN_PASSWORD + " = ?",
                 new String[]{username, password});
 
-        if (cursor.getCount() > 0) {
-            cursor.close();
-            return true;
-        } else {
-            cursor.close();
-            return false;
-        }
+        return cursor;
     }
     void addUser(String username, String password, String email) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -208,5 +205,92 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         } else {
             Toast.makeText(context, "User deleted successfully!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    long addOrder(String userId, String date, String quantity, String totalmoney, String status){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_ORDER_USER_ID, userId);
+        cv.put(COLUMN_ORDER_DATE, date);
+        cv.put(COLUMN_ORDER_QUANTITY, quantity);
+        cv.put(COLUMN_ORDER_TOTALMONEY, totalmoney);
+        cv.put(COLUMN_ORDER_STATUS, status);
+        long result = db.insert(ORDER_TABLE_NAME, null, cv);
+        if (result == -1){
+            Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
+        }
+        return result;
+    }
+
+    public Cursor getOrderById(int orderId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE " + COLUMN_ORDER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(orderId)});
+
+        if (cursor != null) {
+            cursor.moveToFirst();  // Move to the first row, in case you need to read the data later
+        }
+
+        return cursor;  // Returns the cursor, from which you can extract the details later
+    }
+    public Cursor getOrderByUserId(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE " + COLUMN_ORDER_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        return cursor;  // Returns the cursor, from which you can extract the details later
+    }
+    void addOrderDetail(String orderId, String productId, String quantity, String totalmoney){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_ORDERDETAIL_ORDER_ID, orderId);
+        cv.put(COLUMN_ORDERDETAIL_PRODUCT_ID, productId);
+        cv.put(COLUMN_ORDERDETAIL_QUANTITY, quantity);
+        cv.put(COLUMN_ORDERDETAIL_TOTALMONEY, totalmoney);
+        long result = db.insert(ORDERDETAIL_TABLE_NAME, null, cv);
+        if (result == -1){
+            Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
+        }
+    }
+    void updateOrderDetail(String orderDetailId,String quantity, String totalmoney) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_ORDERDETAIL_QUANTITY, quantity);
+        cv.put(COLUMN_ORDERDETAIL_TOTALMONEY, totalmoney);
+        long result = db.update(ORDERDETAIL_TABLE_NAME, cv, COLUMN_ORDERDETAIL_ID + "=?", new String[]{orderDetailId});
+        if (result == -1){
+            Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
+        }
+    }
+    public List<Cursor> GetOrderDetailsByOrderId(int orderId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Cursor> orderDetailsList = new ArrayList<>();
+
+        // Truy vấn các dòng từ bảng orderDetails với orderId tương ứng
+        String query = "SELECT * FROM " + ORDERDETAIL_TABLE_NAME + " WHERE " + COLUMN_ORDERDETAIL_ORDER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(orderId)});
+
+        // Duyệt qua các kết quả và thêm vào danh sách
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                // Tạo một cursor mới cho mỗi bản ghi orderDetail và thêm vào danh sách
+                orderDetailsList.add(cursor);
+            } while (cursor.moveToNext());
+        }
+
+        // Đóng cursor để tránh rò rỉ bộ nhớ (nếu bạn đã xử lý dữ liệu)
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return orderDetailsList;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.crud;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class Login extends AppCompatActivity {
 
     public static String account_role;
+    public static int account_Id;
     EditText editTextUsername, editTextPassword;
     Button buttonLogin;
     MyDatabaseHelper myDB;
@@ -43,18 +45,20 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
-
+                Cursor cursor;
                 if(username.equals("admin@gmail.com") && password.equals("12345")){
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "Admin";
+                    account_Id = 0;
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 }
-                else if (myDB.checkUser(username, password)) {
+                else if ((cursor = myDB.checkUser(username, password))!=null) {
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "User";
+                    account_Id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow("COLUMN_USER_ID")));
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 } else {

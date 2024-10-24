@@ -2,6 +2,7 @@ package com.example.crud;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     Context context;
@@ -71,6 +74,28 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                             Intent intentDelete = new Intent(context, MainActivity.class);
                             context.startActivity(intentDelete);
                             return true;
+                        } else if(itemId == R.id.addCardBtn){
+                            MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
+                            Cursor cursor1 = databaseHelper.getOrderByUserId(Login.account_Id);
+                            if(cursor1 == null){
+                                long id = databaseHelper.addOrder(String.valueOf(Login.account_Id),null,null,null,null);
+                                databaseHelper.addOrderDetail(String.valueOf(id),holder.vegetable_id_txt.getText().toString(),String.valueOf(1),null);
+                            }else{
+                                List<Cursor> orderDetails = new ArrayList<>();
+                                orderDetails = databaseHelper.GetOrderDetailsByOrderId(cursor1.getInt(cursor1.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_ORDER_ID")));
+                                for (Cursor orderDetail : orderDetails) {
+                                    if(orderDetail.getString(orderDetail.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_PRODUCT_ID")).equals(holder.vegetable_id_txt.getText().toString())){
+                                        databaseHelper.updateOrderDetail(orderDetail.getString(orderDetail.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_PRODUCT_ID")),
+                                                String.valueOf(orderDetail.getInt(orderDetail.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_QUANTITY")) + 1),null);
+                                    }
+
+                                    if(orderDetail == orderDetails.get((int)orderDetails.stream().count())){
+                                        databaseHelper.addOrderDetail(cursor1.getString(cursor1.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_ORDER_ID")),holder.vegetable_id_txt.getText().toString(),String.valueOf(1),null);
+                                    }
+                                }
+                            }
+
+                            Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
                         }
                         return false;
                     }

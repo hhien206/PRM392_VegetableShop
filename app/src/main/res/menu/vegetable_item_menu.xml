@@ -6,4 +6,7 @@
     <item
         android:id="@+id/deleteBtn"
         android:title="Delete" />
+    <item
+        android:id="@+id/addCardBtn"
+        android:title="AddCard" />
 </menu>
