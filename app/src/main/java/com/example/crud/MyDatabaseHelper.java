@@ -28,6 +28,23 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_PASSWORD = "user_password";
     private static final String COLUMN_EMAIL = "user_email";
 
+    //CREATE ORDERDETAIL DB
+    private static final String ORDERDETAIL_TABLE_NAME = "my_orderDetails";
+    private static final String COLUMN_ORDERDETAIL_ID = "orderDetail_id";
+    private static final String COLUMN_ORDERDETAIL_ORDER_ID = "orderDetail_order_id";
+    private static final String COLUMN_ORDERDETAIL_PRODUCT_ID = "orderDetail_product_id";
+    private static final String COLUMN_ORDERDETAIL_QUANTITY = "orderDetail_order_quantity";
+    private static final String COLUMN_ORDERDETAIL_TOTALMONEY = "orderDetail_order_totalmoney";
+
+    //CREATE ORDER DB
+    private static final String ORDER_TABLE_NAME = "my_orders";
+    private static final String COLUMN_ORDER_ID = "order_id";
+    private static final String COLUMN_ORDER_USER_ID = "order_userid";
+    private static final String COLUMN_ORDER_DATE = "order_date";
+    private static final String COLUMN_ORDER_QUANTITY = "order_quantity";
+    private static final String COLUMN_ORDER_TOTALMONEY = "order_totalmoney";
+    private static final String COLUMN_ORDER_STATUS = "order_status";
+
     public MyDatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -50,6 +67,25 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                         COLUMN_PASSWORD + " TEXT, " +
                         COLUMN_EMAIL + " TEXT);";
         db.execSQL(queryUser);
+
+        String queryOrderDetails =
+                "CREATE TABLE " + ORDERDETAIL_TABLE_NAME +
+                        " (" + COLUMN_ORDERDETAIL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_ORDERDETAIL_ORDER_ID + " INTEGER, " +
+                        COLUMN_ORDERDETAIL_PRODUCT_ID + " INTEGER, " +
+                        COLUMN_ORDERDETAIL_QUANTITY + " INTEGER, " +
+                        COLUMN_ORDERDETAIL_TOTALMONEY + " REAL);";
+        db.execSQL(queryOrderDetails);
+
+        String queryOrder =
+                "CREATE TABLE " + ORDER_TABLE_NAME +
+                        " (" + COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_ORDER_USER_ID + " INTEGER, " +
+                        COLUMN_ORDER_DATE + " TEXT, " +
+                        COLUMN_ORDER_QUANTITY + " INTEGER, " +
+                        COLUMN_ORDER_TOTALMONEY + " REAL, " +
+                        COLUMN_ORDER_STATUS + " TEXT);";
+        db.execSQL(queryOrder);
     }
 
     @Override
@@ -108,7 +144,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
     //MANAGE USERS
 
-    // Kiểm tra đăng nhập
     boolean checkUser(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + USER_TABLE_NAME + " WHERE " +
