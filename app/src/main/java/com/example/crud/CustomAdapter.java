@@ -3,9 +3,11 @@ package com.example.crud;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,23 +17,25 @@ import java.util.ArrayList;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     Context context;
-    ArrayList vegetable_id,vegetable_name, vegetable_category, vegetable_origincountry;
+    ArrayList vegetable_id, vegetable_name, vegetable_category, vegetable_origincountry;
+
     CustomAdapter(Context context,
                   ArrayList vegetable_id,
                   ArrayList vegetable_name,
                   ArrayList vegetable_category,
-                  ArrayList vegetable_origincountry){
+                  ArrayList vegetable_origincountry) {
         this.context = context;
         this.vegetable_id = vegetable_id;
         this.vegetable_name = vegetable_name;
         this.vegetable_category = vegetable_category;
         this.vegetable_origincountry = vegetable_origincountry;
     }
+
     @NonNull
     @Override
     public CustomAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view  = inflater.inflate(R.layout.my_row, parent, false);
+        View view = inflater.inflate(R.layout.my_row, parent, false);
         return new MyViewHolder(view);
     }
 
@@ -41,24 +45,38 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.vegetable_name_txt.setText(String.valueOf(vegetable_name.get(position)));
         holder.vegetable_category_txt.setText(String.valueOf(vegetable_category.get(position)));
         holder.vegetable_origincountry_txt.setText(String.valueOf(vegetable_origincountry.get(position)));
-        holder.edit_btn.setOnClickListener(new View.OnClickListener() {
+
+        holder.menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UpdateActivity.initialValues(holder.vegetable_id_txt.getText().toString(),
-                        holder.vegetable_name_txt.getText().toString(),
-                        holder.vegetable_category_txt.getText().toString(),
-                        holder.vegetable_origincountry_txt.getText().toString());
-                Intent intent = new Intent(context, UpdateActivity.class);
-                context.startActivity(intent);
-            }
-        });
-        holder.delete_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
-                databaseHelper.deleteVegetable(holder.vegetable_id_txt.getText().toString());
-                Intent intent = new Intent(context, MainActivity.class);
-                context.startActivity(intent);
+                PopupMenu popupMenu = new PopupMenu(context, holder.menuButton);
+                popupMenu.getMenuInflater().inflate(R.menu.vegetable_item_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int itemId = item.getItemId(); // Lưu ID của mục
+
+                        if (itemId == R.id.editBtn) {
+                            UpdateActivity.initialValues(holder.vegetable_id_txt.getText().toString(),
+                                    holder.vegetable_name_txt.getText().toString(),
+                                    holder.vegetable_category_txt.getText().toString(),
+                                    holder.vegetable_origincountry_txt.getText().toString());
+                            Intent intentEdit = new Intent(context, UpdateActivity.class);
+                            context.startActivity(intentEdit);
+                            return true;
+                        } else if (itemId == R.id.deleteBtn) {
+                            MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
+                            databaseHelper.deleteVegetable(holder.vegetable_id_txt.getText().toString());
+                            Intent intentDelete = new Intent(context, MainActivity.class);
+                            context.startActivity(intentDelete);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+                popupMenu.show();
             }
         });
     }
@@ -69,24 +87,16 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView vegetable_id_txt,vegetable_name_txt,vegetable_category_txt,vegetable_origincountry_txt;
-        Button edit_btn,delete_btn;
+        TextView vegetable_id_txt, vegetable_name_txt, vegetable_category_txt, vegetable_origincountry_txt;
+        ImageButton menuButton;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             vegetable_id_txt = itemView.findViewById(R.id.vegetable_id_txt);
             vegetable_name_txt = itemView.findViewById(R.id.vegetable_name_txt);
             vegetable_category_txt = itemView.findViewById(R.id.vegetable_category_txt);
             vegetable_origincountry_txt = itemView.findViewById(R.id.vegetable_origincountry_txt);
-            edit_btn = itemView.findViewById(R.id.editBtn);
-            delete_btn = itemView.findViewById(R.id.deleteBtn);
-            if(Login.account_role.equals("Admin")){
-                edit_btn.setVisibility(View.VISIBLE);
-                delete_btn.setVisibility(View.VISIBLE);
-            }
-            else{
-                edit_btn.setVisibility(View.GONE);
-                delete_btn.setVisibility(View.GONE);
-            }
+            menuButton = itemView.findViewById(R.id.menuButton);
         }
     }
 }
