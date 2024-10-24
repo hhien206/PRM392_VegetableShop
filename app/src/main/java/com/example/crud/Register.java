@@ -55,7 +55,7 @@ public class Register extends AppCompatActivity {
                         finish(); // Quay về màn hình trước đó sau khi đăng ký thành công
                     }
                 } else {
-                    Toast.makeText(Register.this, "Mật khẩu không khớp!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Nhập lại mật khẩu không khớp!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
