@@ -78,23 +78,44 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                             MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
                             Cursor cursor1 = databaseHelper.getOrderByUserId(Login.account_Id);
                             if(cursor1 == null){
-                                long id = databaseHelper.addOrder(String.valueOf(Login.account_Id),null,null,null,null);
-                                databaseHelper.addOrderDetail(String.valueOf(id),holder.vegetable_id_txt.getText().toString(),String.valueOf(1),null);
+                                long id = databaseHelper.addOrder(String.valueOf(Login.account_Id), null, null, null, null);
+                                databaseHelper.addOrderDetail(String.valueOf(id), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), null);
                             }else{
-                                List<Cursor> orderDetails = new ArrayList<>();
-                                orderDetails = databaseHelper.GetOrderDetailsByOrderId(cursor1.getInt(cursor1.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_ORDER_ID")));
-                                for (Cursor orderDetail : orderDetails) {
-                                    if(orderDetail.getString(orderDetail.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_PRODUCT_ID")).equals(holder.vegetable_id_txt.getText().toString())){
-                                        databaseHelper.updateOrderDetail(orderDetail.getString(orderDetail.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_PRODUCT_ID")),
-                                                String.valueOf(orderDetail.getInt(orderDetail.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_QUANTITY")) + 1),null);
-                                    }
+                                if (cursor1.moveToFirst()){
+                                    int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
+                                    if (orderIdColumnIndex != -1){
+                                        int orderId = cursor1.getInt(orderIdColumnIndex);
+                                        Cursor orderDetails = databaseHelper.getOrderDetailsByOrderId(orderId);
+                                        boolean found = false;
 
-                                    if(orderDetail == orderDetails.get((int)orderDetails.stream().count())){
-                                        databaseHelper.addOrderDetail(cursor1.getString(cursor1.getColumnIndexOrThrow("COLUMN_ORDERDETAIL_ORDER_ID")),holder.vegetable_id_txt.getText().toString(),String.valueOf(1),null);
+                                        if (orderDetails != null && orderDetails.moveToFirst()) {
+                                            do {
+                                                int orderDetailIdColumnIndex = orderDetails.getColumnIndex("orderDetail_product_id");
+                                                int quantityColumnIndex = orderDetails.getColumnIndex("orderDetail_order_quantity");
+                                                int orderDetailIdActualIndex = orderDetails.getColumnIndex("orderDetail_id");
+
+                                                if (orderDetailIdColumnIndex != -1 && quantityColumnIndex != -1 && orderDetailIdActualIndex != -1) {
+                                                    String orderDetailId = orderDetails.getString(orderDetailIdColumnIndex);
+                                                    int quantity = orderDetails.getInt(quantityColumnIndex);
+
+                                                    if (orderDetailId.equals(holder.vegetable_id_txt.getText().toString())) {
+                                                        databaseHelper.updateOrderDetail(
+                                                                orderDetails.getString(orderDetailIdActualIndex),
+                                                                String.valueOf(quantity + 1),
+                                                                null
+                                                        );
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                            } while (orderDetails.moveToNext());
+                                        }
+                                        if(!found){
+                                            databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), null);
+                                        }
                                     }
                                 }
                             }
-
                             Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
                         }
                         return false;

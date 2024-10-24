@@ -83,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
             // Gọi hàm xử lý logout
             logout();
             return true;
+        }else if(id == R.id.cart){
+            Intent intentEdit = new Intent(MainActivity.this, CardActivity.class);
+            startActivity(intentEdit);
         }
 
         return super.onOptionsItemSelected(item);

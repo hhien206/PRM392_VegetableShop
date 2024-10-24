@@ -33,6 +33,11 @@
             android:label="Add Vegetable"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".CardActivity"
+            android:exported="false"
+            android:label="Add Vegetable"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".UpdateActivity"
             android:exported="false"
             android:label="Update Vegetable"

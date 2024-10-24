@@ -230,18 +230,30 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE " + COLUMN_ORDER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(orderId)});
 
-        if (cursor != null) {
-            cursor.moveToFirst();  // Move to the first row, in case you need to read the data later
+        // Trả về null nếu không có dữ liệu
+        if (cursor != null && cursor.getCount() > 0) {
+            return cursor;
+        } else {
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
         }
-
-        return cursor;  // Returns the cursor, from which you can extract the details later
     }
     public Cursor getOrderByUserId(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE " + COLUMN_ORDER_USER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
 
-        return cursor;  // Returns the cursor, from which you can extract the details later
+        // Trả về null nếu không có dữ liệu
+        if (cursor != null && cursor.getCount() > 0) {
+            return cursor;
+        } else {
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
+        }
     }
     void addOrderDetail(String orderId, String productId, String quantity, String totalmoney){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -270,27 +282,18 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
         }
     }
-    public List<Cursor> GetOrderDetailsByOrderId(int orderId) {
+    public Cursor getOrderDetailsByOrderId(int orderId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        List<Cursor> orderDetailsList = new ArrayList<>();
-
-        // Truy vấn các dòng từ bảng orderDetails với orderId tương ứng
         String query = "SELECT * FROM " + ORDERDETAIL_TABLE_NAME + " WHERE " + COLUMN_ORDERDETAIL_ORDER_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(orderId)});
 
-        // Duyệt qua các kết quả và thêm vào danh sách
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                // Tạo một cursor mới cho mỗi bản ghi orderDetail và thêm vào danh sách
-                orderDetailsList.add(cursor);
-            } while (cursor.moveToNext());
+        if (cursor != null && cursor.getCount() > 0) {
+            return cursor;
+        } else {
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
         }
-
-        // Đóng cursor để tránh rò rỉ bộ nhớ (nếu bạn đã xử lý dữ liệu)
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return orderDetailsList;
     }
 }
