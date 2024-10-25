@@ -23,6 +23,7 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "vegetable_name";
     private static final String COLUMN_CATEGORY = "vegetable_category";
     private static final String COLUMN_ORIGINCOUNTRY = "vegetable_origincountry";
+    private static final String COLUMN_PRICE = "vegetable_price";
 
     //CREATE USERS DB
     private static final String USER_TABLE_NAME = "my_users";
@@ -60,7 +61,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                         " ("  + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         COLUMN_NAME + " TEXT, " +
                         COLUMN_CATEGORY + " TEXT, " +
-                        COLUMN_ORIGINCOUNTRY + " TEXT);";
+                        COLUMN_ORIGINCOUNTRY + " TEXT, " +
+                        COLUMN_PRICE + " REAL);";
         db.execSQL(query);
 
         String queryUser =
@@ -98,13 +100,14 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
     //MANAGE VEGETABLE
-    void addVegetable(String name, String category, String origincountry){
+    void addVegetable(String name, String category, String origincountry, String price){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
         cv.put(COLUMN_NAME, name);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_ORIGINCOUNTRY, origincountry);
+        cv.put(COLUMN_PRICE, price);
         long result = db.insert(TABLE_NAME, null, cv);
         if (result == -1){
             Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
@@ -122,12 +125,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         }
         return cursor;
     }
-    void updateVegetable(String id, String name, String category, String origincountry) {
+    void updateVegetable(String id, String name, String category, String origincountry , String price) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME, name);
         cv.put(COLUMN_CATEGORY, category);
         cv.put(COLUMN_ORIGINCOUNTRY, origincountry);
+        cv.put(COLUMN_PRICE, price);
         long result = db.update(TABLE_NAME, cv, COLUMN_ID + "=?", new String[]{id});
         if (result == -1){
             Toast.makeText(context, "Failed!", Toast.LENGTH_LONG).show();
@@ -225,6 +229,23 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public void updateOrderStatusAndDate(int orderId, String status, String orderDate, int quantity, double price) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_ORDER_STATUS, status);
+        cv.put(COLUMN_ORDER_DATE, orderDate);
+        cv.put(COLUMN_ORDER_QUANTITY, quantity);
+        cv.put(COLUMN_ORDER_TOTALMONEY, price);
+
+        long result = db.update(ORDER_TABLE_NAME, cv, COLUMN_ORDER_ID + "=?", new String[]{String.valueOf(orderId)});
+
+        if (result == -1) {
+            Toast.makeText(context, "Failed to update order!", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, "Order updated successfully!", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public Cursor getOrderById(int orderId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE " + COLUMN_ORDER_ID + " = ?";
@@ -240,12 +261,28 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
     }
-    public Cursor getOrderByUserId(int userId) {
+    public Cursor getCompletedOrdersByUserId(int userId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE " + COLUMN_ORDER_USER_ID + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+        String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE "
+                + COLUMN_ORDER_USER_ID + " = ? AND "
+                + COLUMN_ORDER_STATUS + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId), "COMPLETED"});
 
-        // Trả về null nếu không có dữ liệu
+        if (cursor != null && cursor.getCount() > 0) {
+            return cursor;
+        } else {
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
+        }
+    }
+    public Cursor getCartByUserId(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + ORDER_TABLE_NAME + " WHERE "
+                + COLUMN_ORDER_USER_ID + " = ? AND "
+                + COLUMN_ORDER_STATUS + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId), "CART"});
         if (cursor != null && cursor.getCount() > 0) {
             return cursor;
         } else {

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton add_button;
 
     MyDatabaseHelper myDB;
-    ArrayList<String> vegetable_id, vegetable_name,vegetable_category,vegetable_origincountry;
+    ArrayList<String> vegetable_id, vegetable_name,vegetable_category,vegetable_origincountry, vegetable_price;
     CustomAdapter customAdapter;
 
     @Override
@@ -61,9 +61,10 @@ public class MainActivity extends AppCompatActivity {
         vegetable_name = new ArrayList<>();
         vegetable_category = new ArrayList<>();
         vegetable_origincountry = new ArrayList<>();
+        vegetable_price = new ArrayList<>();
 
         storedataInArray();
-        customAdapter = new CustomAdapter(MainActivity.this, vegetable_id,vegetable_name,vegetable_category,vegetable_origincountry);
+        customAdapter = new CustomAdapter(MainActivity.this, vegetable_id,vegetable_name,vegetable_category,vegetable_origincountry,vegetable_price);
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
@@ -85,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }else if(id == R.id.cart){
             Intent intentEdit = new Intent(MainActivity.this, CardActivity.class);
+            startActivity(intentEdit);
+        }else if(id== R.id.history){
+            Intent intentEdit = new Intent(MainActivity.this, HistoryActivity.class);
             startActivity(intentEdit);
         }
 
@@ -109,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 vegetable_name.add(cursor.getString(1));
                 vegetable_category.add(cursor.getString(2));
                 vegetable_origincountry.add(cursor.getString(3));
+                vegetable_price.add(cursor.getString(4));
             }
         }
     }

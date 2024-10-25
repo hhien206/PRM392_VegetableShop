@@ -38,7 +38,12 @@
         <activity
             android:name=".CardActivity"
             android:exported="false"
-            android:label="Add Vegetable"
+            android:label="Card"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="History"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".UpdateActivity"

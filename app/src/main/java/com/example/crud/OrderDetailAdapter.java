@@ -13,16 +13,18 @@ import java.util.ArrayList;
 
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.MyViewHolder> {
     Context context;
-    ArrayList orderdetail_id, orderdetail_product_id, orderdetail_quantity;
+    ArrayList orderdetail_id, orderdetail_product_id, orderdetail_quantity, orderdetail_total_money;
 
     OrderDetailAdapter(Context context,
                        ArrayList orderdetail_id,
                        ArrayList orderdetail_product_id,
-                       ArrayList orderdetail_quantity){
+                       ArrayList orderdetail_quantity,
+                       ArrayList orderdetail_total_money){
         this.context = context;
         this.orderdetail_id = orderdetail_id;
         this.orderdetail_product_id = orderdetail_product_id;
         this.orderdetail_quantity = orderdetail_quantity;
+        this.orderdetail_total_money = orderdetail_total_money;
     }
 
     @NonNull
@@ -38,6 +40,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         holder.orderDetailId_txt.setText(String.valueOf(orderdetail_id.get(position)));
         holder.productId_txt.setText(String.valueOf(orderdetail_product_id.get(position)));
         holder.quaitity_txt.setText(String.valueOf(orderdetail_quantity.get(position)));
+        holder.total_money_txt.setText(String.valueOf(orderdetail_total_money.get(position)));
     }
 
     @Override
@@ -46,13 +49,14 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView orderDetailId_txt,productId_txt,quaitity_txt;
+        TextView orderDetailId_txt,productId_txt,quaitity_txt, total_money_txt;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             orderDetailId_txt = itemView.findViewById(R.id.orderDetailId_txt);
             productId_txt = itemView.findViewById(R.id.productId_txt);
             quaitity_txt = itemView.findViewById(R.id.quaitity_txt);
+            total_money_txt = itemView.findViewById(R.id.total_money_txt);
         }
     }
 }

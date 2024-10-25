@@ -30,13 +30,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     @Override
     public HistoryAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.activity_order_history, parent, false);
+        View view = inflater.inflate(R.layout.my_row_order_history, parent, false);
         return new HistoryAdapter.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull HistoryAdapter.MyViewHolder holder, int position) {
-        holder.orderId_txt.setText(String.valueOf(order_id.get(position)));
+        holder.orderId_txt.setText(String.valueOf(order_id.get(position))) ;
         holder.order_date_txt.setText(String.valueOf(order_date.get(position)));
         holder.order_quantity_txt.setText(String.valueOf(order_quantity.get(position)));
         holder.order_totalmoney_txt.setText(String.valueOf(order_totalmoney.get(position)));
@@ -53,10 +53,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            orderId_txt = itemView.findViewById(R.id.orderId_txt);
+            orderId_txt = itemView.findViewById(R.id.order_id_txt);
             order_date_txt = itemView.findViewById(R.id.order_date_txt);
             order_quantity_txt = itemView.findViewById(R.id.order_quantity_txt);
-            order_totalmoney_txt = itemView.findViewById(R.id.order_totalmoney_txt);
+            order_totalmoney_txt = itemView.findViewById(R.id.order_total_txt);
         }
     }
 }

@@ -53,11 +53,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/category_input" />
 
+    <EditText
+        android:id="@+id/price_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:ems="10"
+        android:hint="1$"
+        android:inputType="text"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/category_input" />
+
     <Button
         android:id="@+id/update_button"
         android:layout_width="343dp"
         android:layout_height="56dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="124dp"
         android:text="Edit"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"

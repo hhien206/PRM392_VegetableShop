@@ -13,7 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class AddActivity extends AppCompatActivity {
-    EditText name_input, category_input, origincountry_input;
+    EditText name_input, category_input, origincountry_input, price_input;
     Button add_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +23,7 @@ public class AddActivity extends AppCompatActivity {
         name_input = findViewById(R.id.name_input);
         category_input = findViewById(R.id.category_input);
         origincountry_input = findViewById(R.id.origincountry_input);
+        price_input = findViewById(R.id.price_input);
         add_button = findViewById(R.id.add_button);
         add_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -30,8 +31,8 @@ public class AddActivity extends AppCompatActivity {
                 MyDatabaseHelper myDB = new MyDatabaseHelper(AddActivity.this);
                 myDB.addVegetable(name_input.getText().toString().trim(),
                         category_input.getText().toString().trim(),
-                        origincountry_input.getText().toString().trim()
-                        );
+                        origincountry_input.getText().toString().trim(),
+                        price_input.getText().toString().trim());
                 Intent intent = new Intent(AddActivity.this, MainActivity.class);
                 startActivity(intent);
             }

@@ -20,18 +20,20 @@ import java.util.List;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     Context context;
-    ArrayList vegetable_id, vegetable_name, vegetable_category, vegetable_origincountry;
+    ArrayList vegetable_id, vegetable_name, vegetable_category, vegetable_origincountry,vegetable_price;
 
     CustomAdapter(Context context,
                   ArrayList vegetable_id,
                   ArrayList vegetable_name,
                   ArrayList vegetable_category,
-                  ArrayList vegetable_origincountry) {
+                  ArrayList vegetable_origincountry,
+                  ArrayList vegetable_price) {
         this.context = context;
         this.vegetable_id = vegetable_id;
         this.vegetable_name = vegetable_name;
         this.vegetable_category = vegetable_category;
         this.vegetable_origincountry = vegetable_origincountry;
+        this.vegetable_price = vegetable_price;
     }
 
     @NonNull
@@ -48,6 +50,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.vegetable_name_txt.setText(String.valueOf(vegetable_name.get(position)));
         holder.vegetable_category_txt.setText(String.valueOf(vegetable_category.get(position)));
         holder.vegetable_origincountry_txt.setText(String.valueOf(vegetable_origincountry.get(position)));
+        holder.vegetable_price_txt.setText(String.valueOf(vegetable_price.get(position)));
 
         holder.menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +67,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                             UpdateActivity.initialValues(holder.vegetable_id_txt.getText().toString(),
                                     holder.vegetable_name_txt.getText().toString(),
                                     holder.vegetable_category_txt.getText().toString(),
-                                    holder.vegetable_origincountry_txt.getText().toString());
+                                    holder.vegetable_origincountry_txt.getText().toString(),
+                                    holder.vegetable_price_txt.getText().toString());
                             Intent intentEdit = new Intent(context, UpdateActivity.class);
                             context.startActivity(intentEdit);
                             return true;
@@ -76,10 +80,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                             return true;
                         } else if(itemId == R.id.addCardBtn){
                             MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
-                            Cursor cursor1 = databaseHelper.getOrderByUserId(Login.account_Id);
+                            Cursor cursor1 = databaseHelper.getCartByUserId(Login.account_Id);
                             if(cursor1 == null){
-                                long id = databaseHelper.addOrder(String.valueOf(Login.account_Id), null, null, null, null);
-                                databaseHelper.addOrderDetail(String.valueOf(id), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), null);
+                                long id = databaseHelper.addOrder(String.valueOf(Login.account_Id), null, null, null, "CART");
+                                databaseHelper.addOrderDetail(String.valueOf(id), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
+                                CardActivity.orderId = (int)id;
                             }else{
                                 if (cursor1.moveToFirst()){
                                     int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
@@ -97,12 +102,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                                                 if (orderDetailIdColumnIndex != -1 && quantityColumnIndex != -1 && orderDetailIdActualIndex != -1) {
                                                     String orderDetailId = orderDetails.getString(orderDetailIdColumnIndex);
                                                     int quantity = orderDetails.getInt(quantityColumnIndex);
+                                                    double totalMoney = (quantity + 1) * Double.valueOf(holder.vegetable_price_txt.getText().toString());
 
                                                     if (orderDetailId.equals(holder.vegetable_id_txt.getText().toString())) {
                                                         databaseHelper.updateOrderDetail(
                                                                 orderDetails.getString(orderDetailIdActualIndex),
-                                                                String.valueOf(quantity + 1),
-                                                                null
+                                                                String.valueOf(  quantity+ 1),
+                                                                String.valueOf(totalMoney)
                                                         );
                                                         found = true;
                                                         break;
@@ -111,7 +117,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                                             } while (orderDetails.moveToNext());
                                         }
                                         if(!found){
-                                            databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), null);
+                                            databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
                                         }
                                     }
                                 }
@@ -133,7 +139,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView vegetable_id_txt, vegetable_name_txt, vegetable_category_txt, vegetable_origincountry_txt;
+        TextView vegetable_id_txt, vegetable_name_txt, vegetable_category_txt, vegetable_origincountry_txt, vegetable_price_txt;
         ImageButton menuButton;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -142,6 +148,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             vegetable_name_txt = itemView.findViewById(R.id.vegetable_name_txt);
             vegetable_category_txt = itemView.findViewById(R.id.vegetable_category_txt);
             vegetable_origincountry_txt = itemView.findViewById(R.id.vegetable_origincountry_txt);
+            vegetable_price_txt = itemView.findViewById(R.id.vegetable_price_txt);
             menuButton = itemView.findViewById(R.id.menuButton);
         }
     }

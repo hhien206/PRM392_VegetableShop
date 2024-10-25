@@ -51,12 +51,14 @@ public class Login extends AppCompatActivity {
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "Admin";
                     account_Id = 0;
-                    Cursor cursor1 = myDB.getOrderByUserId(Login.account_Id);
-                    if (cursor1.moveToFirst()) {
-                        int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
-                        if (orderIdColumnIndex != -1) {
-                            int orderId = cursor1.getInt(orderIdColumnIndex);
-                            CardActivity.orderId = orderId;
+                    Cursor cursor1 = myDB.getCartByUserId(Login.account_Id);
+                    if(cursor1 != null){
+                        if (cursor1.moveToFirst()) {
+                            int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
+                            if (orderIdColumnIndex != -1) {
+                                int orderId = cursor1.getInt(orderIdColumnIndex);
+                                CardActivity.orderId = orderId;
+                            }
                         }
                     }
                     Intent intent = new Intent(Login.this, MainActivity.class);
@@ -66,13 +68,17 @@ public class Login extends AppCompatActivity {
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "User";
-                    account_Id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow("COLUMN_USER_ID")));
-                    Cursor cursor1 = myDB.getOrderByUserId(Login.account_Id);
-                    if (cursor1.moveToFirst()) {
-                        int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
-                        if (orderIdColumnIndex != -1) {
-                            int orderId = cursor1.getInt(orderIdColumnIndex);
-                            CardActivity.orderId = orderId;
+                    if (cursor.moveToFirst()) {
+                        account_Id = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
+                    }
+                    Cursor cursor1 = myDB.getCartByUserId(Login.account_Id);
+                    if(cursor1 != null){
+                        if (cursor1.moveToFirst()) {
+                            int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
+                            if (orderIdColumnIndex != -1) {
+                                int orderId = cursor1.getInt(orderIdColumnIndex);
+                                CardActivity.orderId = orderId;
+                            }
                         }
                     }
                     Intent intent = new Intent(Login.this, MainActivity.class);

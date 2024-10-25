@@ -47,6 +47,16 @@
                 android:id="@+id/quaitity_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="76dp"
+                android:text="5"
+                app:layout_constraintStart_toStartOf="@+id/productId_txt"
+                app:layout_constraintTop_toBottomOf="@+id/productId_txt" />
+
+            <TextView
+                android:id="@+id/total_money_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="132dp"
                 android:text="5"
                 app:layout_constraintStart_toStartOf="@+id/productId_txt"
                 app:layout_constraintTop_toBottomOf="@+id/productId_txt" />
