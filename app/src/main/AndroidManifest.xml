@@ -13,14 +13,17 @@
         android:theme="@style/Theme.CRUD"
         tools:targetApi="31">
         <activity
+            android:name=".OrderHistory"
+            android:exported="false" />
+        <activity
             android:name=".Register"
             android:exported="false"
             android:label="Register"
             android:parentActivityName=".Login" /> <!-- LoginActivity sẽ là màn hình khởi động đầu tiên -->
         <activity
             android:name=".Login"
-            android:label="Login"
-            android:exported="true">
+            android:exported="true"
+            android:label="Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
