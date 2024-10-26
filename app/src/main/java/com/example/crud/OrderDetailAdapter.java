@@ -1,6 +1,8 @@
 package com.example.crud;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +39,17 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        MyDatabaseHelper myDB = new MyDatabaseHelper(context);
+        Cursor cursor1 = myDB.getVegetableById(Integer.valueOf(String.valueOf(orderdetail_product_id.get(position))));
+        if(cursor1 != null){
+            if (cursor1.moveToFirst()) {
+                int productNameColumnIndex = cursor1.getColumnIndex("vegetable_name");
+                if (productNameColumnIndex != -1) {
+                    holder.productId_txt.setText(String.valueOf(cursor1.getString(productNameColumnIndex)));
+                }
+            }
+        }
         holder.orderDetailId_txt.setText(String.valueOf(orderdetail_id.get(position)));
-        holder.productId_txt.setText(String.valueOf(orderdetail_product_id.get(position)));
         holder.quaitity_txt.setText(String.valueOf(orderdetail_quantity.get(position)));
         holder.total_money_txt.setText(String.valueOf(orderdetail_total_money.get(position)));
     }

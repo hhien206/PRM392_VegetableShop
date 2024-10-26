@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,56 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
         holder.vegetable_category_txt.setText(String.valueOf(vegetable_category.get(position)));
         holder.vegetable_origincountry_txt.setText(String.valueOf(vegetable_origincountry.get(position)));
         holder.vegetable_price_txt.setText(String.valueOf(vegetable_price.get(position)));
+
+        holder.addCardBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
+                Cursor cursor1 = databaseHelper.getCartByUserId(Login.account_Id);
+                if(cursor1 == null){
+                    long id = databaseHelper.addOrder(String.valueOf(Login.account_Id), null, null, null, "CART");
+                    databaseHelper.addOrderDetail(String.valueOf(id), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
+                    CardActivity.orderId = (int)id;
+                }else{
+                    if (cursor1.moveToFirst()){
+                        int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
+                        if (orderIdColumnIndex != -1){
+                            int orderId = cursor1.getInt(orderIdColumnIndex);
+                            Cursor orderDetails = databaseHelper.getOrderDetailsByOrderId(orderId);
+                            boolean found = false;
+
+                            if (orderDetails != null && orderDetails.moveToFirst()) {
+                                do {
+                                    int orderDetailIdColumnIndex = orderDetails.getColumnIndex("orderDetail_product_id");
+                                    int quantityColumnIndex = orderDetails.getColumnIndex("orderDetail_order_quantity");
+                                    int orderDetailIdActualIndex = orderDetails.getColumnIndex("orderDetail_id");
+
+                                    if (orderDetailIdColumnIndex != -1 && quantityColumnIndex != -1 && orderDetailIdActualIndex != -1) {
+                                        String orderDetailId = orderDetails.getString(orderDetailIdColumnIndex);
+                                        int quantity = orderDetails.getInt(quantityColumnIndex);
+                                        double totalMoney = (quantity + 1) * Double.valueOf(holder.vegetable_price_txt.getText().toString());
+
+                                        if (orderDetailId.equals(holder.vegetable_id_txt.getText().toString())) {
+                                            databaseHelper.updateOrderDetail(
+                                                    orderDetails.getString(orderDetailIdActualIndex),
+                                                    String.valueOf(  quantity+ 1),
+                                                    String.valueOf(totalMoney)
+                                            );
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                } while (orderDetails.moveToNext());
+                            }
+                            if(!found){
+                                databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
+                            }
+                        }
+                    }
+                }
+                Toast.makeText(context, "Add vegetable success!", Toast.LENGTH_LONG).show();
+            }
+        });
 
         holder.menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,7 +174,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                                     }
                                 }
                             }
-                            Toast.makeText(context, "Success!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Add vegetable success!", Toast.LENGTH_LONG).show();
                         }
                         return false;
                     }
@@ -141,6 +193,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView vegetable_id_txt, vegetable_name_txt, vegetable_category_txt, vegetable_origincountry_txt, vegetable_price_txt;
         ImageButton menuButton;
+        FloatingActionButton addCardBtn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -150,6 +203,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             vegetable_origincountry_txt = itemView.findViewById(R.id.vegetable_origincountry_txt);
             vegetable_price_txt = itemView.findViewById(R.id.vegetable_price_txt);
             menuButton = itemView.findViewById(R.id.menuButton);
+            addCardBtn = itemView.findViewById(R.id.addCardBtn);
+
+            if(Login.account_role.equals("Admin")){
+                menuButton.setVisibility(View.VISIBLE);
+            }
+            else{
+                menuButton.setVisibility(View.GONE);
+            }
         }
     }
 }

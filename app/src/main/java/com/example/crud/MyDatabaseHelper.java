@@ -100,6 +100,21 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
     //MANAGE VEGETABLE
+    Cursor getVegetableById(int vegetableId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(vegetableId)});
+
+        // Return the cursor if it contains results; otherwise, close it and return null
+        if (cursor != null && cursor.getCount() > 0) {
+            return cursor;
+        } else {
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
+        }
+    }
     void addVegetable(String name, String category, String origincountry, String price){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
