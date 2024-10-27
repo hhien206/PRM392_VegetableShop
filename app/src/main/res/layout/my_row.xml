@@ -19,6 +19,17 @@
             android:layout_height="wrap_content"
             android:padding="12dp">
 
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/vegetable_img"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/vegetable_img"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/vegetable_origincountry_txt"
+                app:layout_constraintStart_toEndOf="@+id/vegetable_name_txt"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
