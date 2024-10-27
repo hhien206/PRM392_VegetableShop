@@ -348,4 +348,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             return null;
         }
     }
+    void deleteOrderDetail(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.delete(ORDERDETAIL_TABLE_NAME, COLUMN_ORDERDETAIL_ID + "=?", new String[]{id});
+        if (result == -1) {
+            Toast.makeText(context, "Failed to Delete!", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, "Successfully Deleted!", Toast.LENGTH_LONG).show();
+        }
+    }
 }

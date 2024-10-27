@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,6 +53,14 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         holder.orderDetailId_txt.setText(String.valueOf(orderdetail_id.get(position)));
         holder.quaitity_txt.setText(String.valueOf(orderdetail_quantity.get(position)));
         holder.total_money_txt.setText(String.valueOf(orderdetail_total_money.get(position)));
+        holder.remove_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDB.deleteOrderDetail(String.valueOf(holder.orderDetailId_txt.getText()));
+                Intent intentEdit = new Intent(context, CardActivity.class);
+                context.startActivity(intentEdit);
+            }
+        });
     }
 
     @Override
@@ -61,6 +70,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView orderDetailId_txt,productId_txt,quaitity_txt, total_money_txt;
+        Button remove_btn;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -68,6 +78,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
             productId_txt = itemView.findViewById(R.id.productId_txt);
             quaitity_txt = itemView.findViewById(R.id.quaitity_txt);
             total_money_txt = itemView.findViewById(R.id.total_money_txt);
+            remove_btn = itemView.findViewById(R.id.removeBtn);
         }
     }
 }

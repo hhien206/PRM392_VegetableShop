@@ -1,10 +1,14 @@
 package com.example.crud;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +44,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         holder.order_date_txt.setText(String.valueOf(order_date.get(position)));
         holder.order_quantity_txt.setText(String.valueOf(order_quantity.get(position)));
         holder.order_totalmoney_txt.setText(String.valueOf(order_totalmoney.get(position)));
+        holder.view_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ViewOrderDetailHistory.orderId = Integer.valueOf(String.valueOf(order_id.get(position)));
+                Intent intentEdit = new Intent(context, ViewOrderDetailHistory.class);
+                context.startActivity(intentEdit);
+            }
+        });
     }
 
     @Override
@@ -49,6 +61,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView orderId_txt,order_date_txt,order_quantity_txt,order_totalmoney_txt;
+        Button view_btn;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -57,6 +70,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             order_date_txt = itemView.findViewById(R.id.order_date_txt);
             order_quantity_txt = itemView.findViewById(R.id.order_quantity_txt);
             order_totalmoney_txt = itemView.findViewById(R.id.order_total_txt);
+            view_btn = itemView.findViewById(R.id.viewBtn);
         }
     }
 }
