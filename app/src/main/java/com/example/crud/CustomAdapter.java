@@ -211,6 +211,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             else{
                 menuButton.setVisibility(View.GONE);
             }
+            if(Login.account_role.equals("Admin")){
+                addCardBtn.setVisibility(View.GONE);
+            }
+            else{
+                addCardBtn.setVisibility(View.VISIBLE);
+            }
         }
     }
 }
