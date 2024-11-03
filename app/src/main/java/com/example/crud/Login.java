@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.crud.sampledata.User;
+
 public class Login extends AppCompatActivity {
 
     public static String account_role;
@@ -46,6 +48,7 @@ public class Login extends AppCompatActivity {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
                 Cursor cursor;
+                User user = new User();
                 if(username.equals("admin@gmail.com") && password.equals("12345")){
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
@@ -64,12 +67,12 @@ public class Login extends AppCompatActivity {
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 }
-                else if ((cursor = myDB.checkUser(username, password))!=null) {
+                else if ((user = user.ConvertCursorIntoUser(cursor = myDB.checkUser(username, password))) != null) {
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "User";
                     if (cursor.moveToFirst()) {
-                        account_Id = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
+                        account_Id = user.getId();
                     }
                     Cursor cursor1 = myDB.getCartByUserId(Login.account_Id);
                     if(cursor1 != null){
