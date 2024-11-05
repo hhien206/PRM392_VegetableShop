@@ -82,10 +82,14 @@ public class CardActivity extends AppCompatActivity {
         buy_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Cursor cursor = myDB.getOrderDetailsByOrderId(orderId);
+                List<OrderDetail> orderDetails = new ArrayList<>();
+                orderDetails = OrderDetail.ConvertCursorIntoListOrderDetail(cursor);
+                double price = getAllPriceOrder(orderDetails);
                 CreateOrder orderApi = new CreateOrder();
                 String token = "";
                 try {
-                    JSONObject data = orderApi.createOrder("15000");
+                    JSONObject data = orderApi.createOrder(String.valueOf((int)price));
                     String code = data.getString("return_code");
                     if (code.equals("1")) {
                         token = data.getString("zp_trans_token");
