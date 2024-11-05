@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     MyDatabaseHelper myDB;
     ArrayList<String> vegetable_id, vegetable_name,vegetable_category,vegetable_origincountry, vegetable_price;
     CustomAdapter customAdapter;
+    public static String searchName="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,24 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.vegetable_main_menu, menu);
+        inflater.inflate(R.menu.options_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchName = s;
+                Intent intentEdit = new Intent(MainActivity.this, MainActivity.class);
+                startActivity(intentEdit);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return true;
+            }
+        });
+
         return true;
     }
     @Override
@@ -106,9 +126,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Bạn đã đăng xuất!", Toast.LENGTH_SHORT).show();
     }
     void storedataInArray(){
-        Cursor cursor = myDB.readAllData();
         List<Vegetable> vegetables = new ArrayList<>();
-        vegetables = Vegetable.ConvertCursorIntoListVegetable(cursor);
+        vegetables = handleSearch(searchName);
         for (Vegetable item : vegetables) {
             vegetable_id.add(String.valueOf(item.getId()));
             vegetable_name.add(String.valueOf(item.getName()));
@@ -116,5 +135,18 @@ public class MainActivity extends AppCompatActivity {
             vegetable_origincountry.add(String.valueOf(item.getOriginCountry()));
             vegetable_price.add(String.valueOf(item.getPrice()));
         }
+    }
+
+    private List<Vegetable> handleSearch(String query) {
+        Cursor cursor = myDB.readAllData();
+        List<Vegetable> vegetables = new ArrayList<>();
+        vegetables = Vegetable.ConvertCursorIntoListVegetable(cursor);
+        List<Vegetable> result = new ArrayList<>();
+        for (Vegetable item : vegetables) {
+            if(item.getName().toLowerCase().contains(query.toLowerCase())){
+                result.add(item);
+            }
+        }
+        return result;
     }
 }
