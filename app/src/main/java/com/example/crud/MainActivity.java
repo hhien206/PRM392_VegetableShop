@@ -17,9 +17,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.crud.model.Vegetable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -105,16 +107,14 @@ public class MainActivity extends AppCompatActivity {
     }
     void storedataInArray(){
         Cursor cursor = myDB.readAllData();
-        if (cursor.getCount() == 0){
-            Toast.makeText(this, "No data",Toast.LENGTH_LONG).show();
-        }else {
-            while (cursor.moveToNext()){
-                vegetable_id.add(cursor.getString(0));
-                vegetable_name.add(cursor.getString(1));
-                vegetable_category.add(cursor.getString(2));
-                vegetable_origincountry.add(cursor.getString(3));
-                vegetable_price.add(cursor.getString(4));
-            }
+        List<Vegetable> vegetables = new ArrayList<>();
+        vegetables = Vegetable.ConvertCursorIntoListVegetable(cursor);
+        for (Vegetable item : vegetables) {
+            vegetable_id.add(String.valueOf(item.getId()));
+            vegetable_name.add(String.valueOf(item.getName()));
+            vegetable_category.add(String.valueOf(item.getCategory()));
+            vegetable_origincountry.add(String.valueOf(item.getOriginCountry()));
+            vegetable_price.add(String.valueOf(item.getPrice()));
         }
     }
 }

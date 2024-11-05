@@ -17,11 +17,13 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.crud.model.Order;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class HistoryActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -86,8 +88,9 @@ public class HistoryActivity extends AppCompatActivity {
     }
     void storedataInArray() {
         Cursor cursor = myDB.getCompletedOrdersByUserId(Login.account_Id);
-        if(cursor == null) return;;
-        if (cursor.getCount() == 0) {
+        List<Order> orders = new ArrayList<>();
+        orders = Order.ConvertCursorIntoListOrder(cursor);
+        if (orders.isEmpty()) {
             Toast.makeText(this, "No data", Toast.LENGTH_LONG).show();
         } else {
             order_id.clear();
@@ -95,23 +98,11 @@ public class HistoryActivity extends AppCompatActivity {
             order_quantity.clear();
             order_totalmoney.clear();
 
-            while (cursor.moveToNext()) {
-                int orderIdColumnIndex = cursor.getColumnIndex("order_id");
-                int orderDateColumnIndex = cursor.getColumnIndex("order_date");
-                int orderQuantityColumnIndex = cursor.getColumnIndex("order_quantity");
-                int orderTotalMoneyColumnIndex = cursor.getColumnIndex("order_totalmoney");
-
-                if (orderIdColumnIndex != -1 && orderDateColumnIndex != -1 && orderQuantityColumnIndex != -1 && orderTotalMoneyColumnIndex != -1) {
-                    String orderId = cursor.getString(orderIdColumnIndex);
-                    String orderDate = cursor.getString(orderDateColumnIndex);
-                    int quantity = cursor.getInt(orderQuantityColumnIndex);
-                    double totalMoney = cursor.getDouble(orderTotalMoneyColumnIndex);
-
-                    order_id.add(orderId);
-                    order_date.add(orderDate);
-                    order_quantity.add(String.valueOf(quantity));
-                    order_totalmoney.add(String.valueOf(totalMoney));
-                }
+            for (Order order: orders) {
+                order_id.add(String.valueOf(order.getId()));
+                order_date.add(String.valueOf(order.getDate()));
+                order_quantity.add(String.valueOf(String.valueOf(order.getQuantity())));
+                order_totalmoney.add(String.valueOf(String.valueOf(order.getTotalMoney())));
             }
         }
         cursor.close();

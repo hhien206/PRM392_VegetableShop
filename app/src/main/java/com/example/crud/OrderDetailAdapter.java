@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.crud.model.Vegetable;
+
 import java.util.ArrayList;
 
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.MyViewHolder> {
@@ -42,13 +44,10 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         MyDatabaseHelper myDB = new MyDatabaseHelper(context);
         Cursor cursor1 = myDB.getVegetableById(Integer.valueOf(String.valueOf(orderdetail_product_id.get(position))));
-        if(cursor1 != null){
-            if (cursor1.moveToFirst()) {
-                int productNameColumnIndex = cursor1.getColumnIndex("vegetable_name");
-                if (productNameColumnIndex != -1) {
-                    holder.productId_txt.setText(String.valueOf(cursor1.getString(productNameColumnIndex)));
-                }
-            }
+        Vegetable vegetable = new Vegetable();
+        vegetable = Vegetable.ConvertCursorIntoVegetable(cursor1);
+        if(vegetable != null){
+            holder.productId_txt.setText(vegetable.getName());
         }
         holder.orderDetailId_txt.setText(String.valueOf(orderdetail_id.get(position)));
         holder.quaitity_txt.setText(String.valueOf(orderdetail_quantity.get(position)));

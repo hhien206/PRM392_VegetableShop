@@ -13,6 +13,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.crud.model.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Register extends AppCompatActivity {
 
     EditText usernameInput, passwordInput, confirmPasswordInput;
@@ -45,7 +50,6 @@ public class Register extends AppCompatActivity {
                 String username = usernameInput.getText().toString().trim();
                 String password = passwordInput.getText().toString().trim();
                 String confirmPassword = confirmPasswordInput.getText().toString().trim();
-
                 if (password.equals(confirmPassword)) {
                     if (checkUserExists(username)) {
                         Toast.makeText(Register.this, "Tên đăng nhập đã tồn tại!", Toast.LENGTH_SHORT).show();
@@ -62,16 +66,12 @@ public class Register extends AppCompatActivity {
     }
     private boolean checkUserExists(String username) {
         Cursor cursor = myDB.readAllUsers();
-
-        // Duyệt qua dữ liệu để kiểm tra xem có người dùng nào có tên đăng nhập giống với 'username' hay không
-        while (cursor.moveToNext()) {
-            String existingUsername = cursor.getString(cursor.getColumnIndexOrThrow("username"));
-            if (existingUsername.equals(username)) {
-                return true; // Người dùng đã tồn tại
-            }
-        }
-
+        List<User> users = new ArrayList<>();
+        users = User.ConvertCursorIntoListUser(cursor);
         cursor.close();
+        for (User u: users) {
+            if(u.getName().equals(username)) return true;
+        }
         return false; // Người dùng không tồn tại
     }
 }

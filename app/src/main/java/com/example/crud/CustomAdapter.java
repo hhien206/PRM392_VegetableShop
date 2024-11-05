@@ -15,6 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.crud.model.Order;
+import com.example.crud.model.OrderDetail;
+import com.example.crud.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -59,45 +62,34 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             public void onClick(View view) {
                 MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
                 Cursor cursor1 = databaseHelper.getCartByUserId(Login.account_Id);
-                if(cursor1 == null){
+                Order order = new Order();
+                order = Order.ConvertCursorIntoOrder(cursor1);
+                if(order == null){
                     long id = databaseHelper.addOrder(String.valueOf(Login.account_Id), null, null, null, "CART");
                     databaseHelper.addOrderDetail(String.valueOf(id), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
                     CardActivity.orderId = (int)id;
                 }else{
-                    if (cursor1.moveToFirst()){
-                        int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
-                        if (orderIdColumnIndex != -1){
-                            int orderId = cursor1.getInt(orderIdColumnIndex);
-                            Cursor orderDetails = databaseHelper.getOrderDetailsByOrderId(orderId);
-                            boolean found = false;
-
-                            if (orderDetails != null && orderDetails.moveToFirst()) {
-                                do {
-                                    int orderDetailIdColumnIndex = orderDetails.getColumnIndex("orderDetail_product_id");
-                                    int quantityColumnIndex = orderDetails.getColumnIndex("orderDetail_order_quantity");
-                                    int orderDetailIdActualIndex = orderDetails.getColumnIndex("orderDetail_id");
-
-                                    if (orderDetailIdColumnIndex != -1 && quantityColumnIndex != -1 && orderDetailIdActualIndex != -1) {
-                                        String orderDetailId = orderDetails.getString(orderDetailIdColumnIndex);
-                                        int quantity = orderDetails.getInt(quantityColumnIndex);
-                                        double totalMoney = (quantity + 1) * Double.valueOf(holder.vegetable_price_txt.getText().toString());
-
-                                        if (orderDetailId.equals(holder.vegetable_id_txt.getText().toString())) {
-                                            databaseHelper.updateOrderDetail(
-                                                    orderDetails.getString(orderDetailIdActualIndex),
-                                                    String.valueOf(  quantity+ 1),
-                                                    String.valueOf(totalMoney)
-                                            );
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                } while (orderDetails.moveToNext());
-                            }
-                            if(!found){
-                                databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
-                            }
+                    int orderId = order.getId();
+                    Cursor cursor2 = databaseHelper.getOrderDetailsByOrderId(orderId);
+                    List<OrderDetail> orderDetails = new ArrayList<>();
+                    orderDetails = OrderDetail.ConvertCursorIntoListOrderDetail(cursor2);
+                    boolean found = false;
+                    for (OrderDetail item: orderDetails) {
+                        String orderDetailId = String.valueOf(item.getId());
+                        int quantity = item.getQuantity();
+                        double totalMoney = (quantity + 1) * Double.valueOf(holder.vegetable_price_txt.getText().toString());
+                        if (String.valueOf(item.getProductId()).equals(holder.vegetable_id_txt.getText().toString())) {
+                            databaseHelper.updateOrderDetail(
+                                    orderDetailId,
+                                    String.valueOf(  quantity+ 1),
+                                    String.valueOf(totalMoney)
+                            );
+                            found = true;
+                            break;
                         }
+                    }
+                    if(!found){
+                        databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
                     }
                 }
                 Toast.makeText(context, "Add vegetable success!", Toast.LENGTH_LONG).show();
@@ -130,51 +122,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                             Intent intentDelete = new Intent(context, MainActivity.class);
                             context.startActivity(intentDelete);
                             return true;
-                        } else if(itemId == R.id.addCardBtn){
-                            MyDatabaseHelper databaseHelper = new MyDatabaseHelper(context);
-                            Cursor cursor1 = databaseHelper.getCartByUserId(Login.account_Id);
-                            if(cursor1 == null){
-                                long id = databaseHelper.addOrder(String.valueOf(Login.account_Id), null, null, null, "CART");
-                                databaseHelper.addOrderDetail(String.valueOf(id), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
-                                CardActivity.orderId = (int)id;
-                            }else{
-                                if (cursor1.moveToFirst()){
-                                    int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
-                                    if (orderIdColumnIndex != -1){
-                                        int orderId = cursor1.getInt(orderIdColumnIndex);
-                                        Cursor orderDetails = databaseHelper.getOrderDetailsByOrderId(orderId);
-                                        boolean found = false;
-
-                                        if (orderDetails != null && orderDetails.moveToFirst()) {
-                                            do {
-                                                int orderDetailIdColumnIndex = orderDetails.getColumnIndex("orderDetail_product_id");
-                                                int quantityColumnIndex = orderDetails.getColumnIndex("orderDetail_order_quantity");
-                                                int orderDetailIdActualIndex = orderDetails.getColumnIndex("orderDetail_id");
-
-                                                if (orderDetailIdColumnIndex != -1 && quantityColumnIndex != -1 && orderDetailIdActualIndex != -1) {
-                                                    String orderDetailId = orderDetails.getString(orderDetailIdColumnIndex);
-                                                    int quantity = orderDetails.getInt(quantityColumnIndex);
-                                                    double totalMoney = (quantity + 1) * Double.valueOf(holder.vegetable_price_txt.getText().toString());
-
-                                                    if (orderDetailId.equals(holder.vegetable_id_txt.getText().toString())) {
-                                                        databaseHelper.updateOrderDetail(
-                                                                orderDetails.getString(orderDetailIdActualIndex),
-                                                                String.valueOf(  quantity+ 1),
-                                                                String.valueOf(totalMoney)
-                                                        );
-                                                        found = true;
-                                                        break;
-                                                    }
-                                                }
-                                            } while (orderDetails.moveToNext());
-                                        }
-                                        if(!found){
-                                            databaseHelper.addOrderDetail(String.valueOf(CardActivity.orderId), holder.vegetable_id_txt.getText().toString(), String.valueOf(1), holder.vegetable_price_txt.getText().toString());
-                                        }
-                                    }
-                                }
-                            }
-                            Toast.makeText(context, "Add vegetable success!", Toast.LENGTH_LONG).show();
                         }
                         return false;
                     }

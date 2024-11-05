@@ -17,11 +17,13 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.crud.model.OrderDetail;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ViewOrderDetailHistory extends AppCompatActivity {
 
@@ -89,66 +91,21 @@ public class ViewOrderDetailHistory extends AppCompatActivity {
     void storedataInArray() {
         if(orderId == 0) return;
         Cursor cursor = myDB.getOrderDetailsByOrderId(orderId);
-
-        if (cursor.getCount() == 0) {
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        orderDetails = OrderDetail.ConvertCursorIntoListOrderDetail(cursor);
+        if (orderDetails.isEmpty()) {
             Toast.makeText(this, "No data", Toast.LENGTH_LONG).show();
         } else {
             orderdetail_id.clear();
             orderdetail_product_id.clear();
             orderdetail_quantity.clear();
             orderdetail_total_money.clear();
-
-            while (cursor.moveToNext()) {
-                int orderDetailIdColumnIndex = cursor.getColumnIndex("orderDetail_id");
-                int productIdColumnIndex = cursor.getColumnIndex("orderDetail_product_id");
-                int quantityColumnIndex = cursor.getColumnIndex("orderDetail_order_quantity");
-                int totalColumnIndex = cursor.getColumnIndex("orderDetail_order_totalmoney");
-
-                if (orderDetailIdColumnIndex != -1 && productIdColumnIndex != -1 && quantityColumnIndex != -1 && totalColumnIndex != -1) {
-                    String orderDetailId = cursor.getString(orderDetailIdColumnIndex);
-                    String productId = cursor.getString(productIdColumnIndex);
-                    int quantity = cursor.getInt(quantityColumnIndex);
-                    double total = cursor.getDouble(totalColumnIndex);
-
-                    orderdetail_id.add(orderDetailId);
-                    orderdetail_product_id.add(productId);
-                    orderdetail_quantity.add(String.valueOf(quantity));
-                    orderdetail_total_money.add(String.valueOf(total));
-                }
+            for (OrderDetail orderDetail: orderDetails) {
+                orderdetail_id.add(String.valueOf(orderDetail.getId()));
+                orderdetail_product_id.add(String.valueOf(orderDetail.getProductId()));
+                orderdetail_quantity.add(String.valueOf(orderDetail.getQuantity()));
+                orderdetail_total_money.add(String.valueOf(orderDetail.getTotalMoney()));
             }
         }
-        cursor.close();
-    }
-    int getAllQuantityOrder(Cursor orderDetails){
-        int totalQuantity = 0;
-
-        if (orderDetails != null && orderDetails.moveToFirst()) {
-            int quantityColumnIndex = orderDetails.getColumnIndex("orderDetail_order_quantity");
-
-            do {
-                if (quantityColumnIndex != -1) {
-                    int quantity = orderDetails.getInt(quantityColumnIndex);
-                    totalQuantity += quantity;
-                }
-            } while (orderDetails.moveToNext());
-        }
-
-        return totalQuantity;
-    }
-    double getAllPriceOrder(Cursor orderDetails){
-        double totalPrice = 0.0;
-
-        if (orderDetails != null && orderDetails.moveToFirst()) {
-            int priceColumnIndex = orderDetails.getColumnIndex("orderDetail_order_totalmoney");
-
-            do {
-                if (priceColumnIndex != -1) {
-                    double price = orderDetails.getDouble(priceColumnIndex);
-                    totalPrice += price;
-                }
-            } while (orderDetails.moveToNext());
-        }
-
-        return totalPrice;
     }
 }

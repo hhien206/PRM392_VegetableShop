@@ -14,6 +14,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.crud.model.Order;
+import com.example.crud.model.User;
+
 public class Login extends AppCompatActivity {
 
     public static String account_role;
@@ -28,7 +31,7 @@ public class Login extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-
+        Button buttonMap = findViewById(R.id.map_button);
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
@@ -46,40 +49,33 @@ public class Login extends AppCompatActivity {
                 String username = editTextUsername.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
                 Cursor cursor;
+                User user = new User();
                 if(username.equals("admin@gmail.com") && password.equals("12345")){
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "Admin";
                     account_Id = 0;
                     Cursor cursor1 = myDB.getCartByUserId(Login.account_Id);
-                    if(cursor1 != null){
-                        if (cursor1.moveToFirst()) {
-                            int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
-                            if (orderIdColumnIndex != -1) {
-                                int orderId = cursor1.getInt(orderIdColumnIndex);
-                                CardActivity.orderId = orderId;
-                            }
-                        }
+                    Order order = new Order();
+                    order = Order.ConvertCursorIntoOrder(cursor1);
+                    if(order != null){
+                        CardActivity.orderId = order.getId();
                     }
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
                 }
-                else if ((cursor = myDB.checkUser(username, password))!=null) {
+                else if ((user = (User.ConvertCursorIntoUser(cursor = myDB.checkUser(username, password)))) != null) {
                     Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     // Chuyển sang Activity khác nếu đăng nhập thành công
                     account_role = "User";
                     if (cursor.moveToFirst()) {
-                        account_Id = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
+                        account_Id = user.getId();
                     }
                     Cursor cursor1 = myDB.getCartByUserId(Login.account_Id);
-                    if(cursor1 != null){
-                        if (cursor1.moveToFirst()) {
-                            int orderIdColumnIndex = cursor1.getColumnIndex("order_id");
-                            if (orderIdColumnIndex != -1) {
-                                int orderId = cursor1.getInt(orderIdColumnIndex);
-                                CardActivity.orderId = orderId;
-                            }
-                        }
+                    Order order = new Order();
+                    order = Order.ConvertCursorIntoOrder(cursor1);
+                    if(order != null){
+                        CardActivity.orderId = order.getId();
                     }
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     startActivity(intent);
@@ -93,6 +89,13 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Login.this, Register.class);
+                startActivity(intent);
+            }
+        });
+        buttonMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Login.this, MapActivity.class);
                 startActivity(intent);
             }
         });
